@@ -19,11 +19,13 @@
 
 #import <WebKit/WebKit.h>
 #import <Cordova/CDV.h>
+#import <Cordova/CDVPlugin.h>
 
 @interface CDVWKWebViewEngine : CDVPlugin <CDVWebViewEngineProtocol, WKScriptMessageHandler, WKNavigationDelegate>
 
 @property (nonatomic, strong, readonly) id <WKUIDelegate> uiDelegate;
 
 - (void)allowsBackForwardNavigationGestures:(CDVInvokedUrlCommand*)command;
+- (void)setCookie:(CDVInvokedUrlCommand*)command;
 
 @end

@@ -471,6 +471,36 @@ static void * KVOContext = &KVOContext;
     wkWebView.allowsBackForwardNavigationGestures = [value boolValue];
 }
 
+- (void)setCookie:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult *result = nil;
+    
+    NSString* urlString = [command.arguments objectAtIndex:0];
+    NSString* cookieName = [command.arguments objectAtIndex:1];
+    NSString* cookieValue = [command.arguments objectAtIndex:2];
+
+    NSMutableDictionary *cookieProperties = [NSMutableDictionary dictionary];
+    [cookieProperties setObject:cookieName forKey:NSHTTPCookieName];
+    [cookieProperties setObject:cookieValue forKey:NSHTTPCookieValue];
+    [cookieProperties setObject:urlString forKey:NSHTTPCookieOriginURL];
+    [cookieProperties setObject:@"/" forKey:NSHTTPCookiePath];
+    
+    NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieProperties];
+    
+    WKWebView* wkWebView = (WKWebView*)_engineWebView;
+    WKHTTPCookieStore *cookieStore = wkWebView.configuration.websiteDataStore.httpCookieStore;
+    
+    [cookieStore setCookie:cookie completionHandler:^{
+        NSLog(@"setCookie completed");
+    }];
+    
+    [(WKWebView*)_engineWebView reload];
+    
+    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Set cookie executed"];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    
+}
+
 @end
 
 #pragma mark - CDVWKWeakScriptMessageHandler
